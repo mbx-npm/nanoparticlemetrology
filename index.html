@@ -839,6 +839,31 @@
     max-width: 100%;
   }
 }
+
+/* ============ LIGHTBOX ============ */
+.lightbox-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(42, 31, 26, 0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: none; align-items: center; justify-content: center;
+  padding: 40px; cursor: zoom-out;
+}
+.lightbox-overlay.open { display: flex; }
+.lightbox-overlay img {
+  max-width: 90vw; max-height: 90vh;
+  border-radius: 12px;
+  border: 6px solid var(--paper);
+  box-shadow: var(--shadow-lift);
+  cursor: default;
+}
+.lightbox-close {
+  position: absolute; top: 24px; right: 28px;
+  background: none; border: none;
+  color: var(--paper);
+  font-size: 40px; line-height: 1; cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
 </style>
 </head>
 <body>
@@ -935,7 +960,7 @@
 
   <div class="mbx-block">
     <!-- Example Image added here -->
-    <img src="images/MBX_image_inverted_v4.png" alt="MBx group illustration: a microscope objective imaging vesicles, bacteria, and lipoproteins above a tissue surface">
+    <img src="images/MBX_image_pink.png" alt="MBx group illustration: a microscope objective imaging vesicles, bacteria, and lipoproteins above a tissue surface">
     <div>
       <h3>We are part of <a href="https://www.tue.nl/en/research/research-groups/molecular-biosensing" target="_blank"><em>MBx</em></a></h3>
       <p>The Molecular Biosensing group at the Department of Applied Physics develops measurement methods for molecules and particles in biological samples, with applications across diagnostics, drug delivery, and basic biology. </p>
@@ -1754,6 +1779,39 @@ function renderPublications(currentFilter = 'all') {
   });
 }
 syncLatelyWithNews();
+
+// ============ LIGHTBOX FOR PHOTOS ============
+(function () {
+  const overlay = document.createElement('div');
+  overlay.className = 'lightbox-overlay';
+  overlay.innerHTML = '<button class="lightbox-close" aria-label="Close">&times;</button><img alt="">';
+  document.body.appendChild(overlay);
+  const overlayImg = overlay.querySelector('img');
+
+  function openLightbox(src, alt) {
+    overlayImg.src = src;
+    overlayImg.alt = alt || '';
+    overlay.classList.add('open');
+  }
+  function closeLightbox() {
+    overlay.classList.remove('open');
+    overlayImg.src = '';
+  }
+
+  document.querySelectorAll(
+    '.pi-card img.portrait-stub, .member-card img.portrait-stub, .group-photo-card img'
+  ).forEach(img => {
+    img.style.cursor = 'zoom-in';
+    img.addEventListener('click', () => openLightbox(img.src, img.alt));
+  });
+
+  overlay.addEventListener('click', e => {
+    if (e.target !== overlayImg) closeLightbox();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+})();
 </script>
 
 </body>
