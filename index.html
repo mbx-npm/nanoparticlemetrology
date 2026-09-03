@@ -609,6 +609,43 @@
     font-family: 'Fraunces', serif; font-style: italic;
     font-size: 14px; color: var(--ink-soft);
   }
+.carousel-frame { position: relative; overflow: hidden; }
+.carousel-track {
+  display: flex;
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.carousel-track img {
+  flex: 0 0 100%;
+  width: 100%; aspect-ratio: 16 / 7;
+  object-fit: cover; display: block;
+}
+.carousel-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 40px; height: 40px; padding: 0;
+  border: none; border-radius: 50%;
+  background: rgba(255, 252, 247, 0.85);
+  color: var(--ink); font-size: 26px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; opacity: 0.7;
+  box-shadow: var(--shadow-soft);
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+.carousel-btn:hover { opacity: 1; background: var(--paper); }
+.carousel-btn.prev { left: 14px; }
+.carousel-btn.next { right: 14px; }
+.carousel-dots {
+  display: flex; gap: 8px; justify-content: center;
+  padding: 14px 0 0;
+}
+.carousel-dot {
+  width: 8px; height: 8px; padding: 0;
+  border: none; border-radius: 50%;
+  background: var(--ink-faint); opacity: 0.5;
+  cursor: pointer; transition: all 0.2s ease;
+}
+.carousel-dot.active { background: var(--rose); opacity: 1; }
+
+@media (max-width: 640px) { .carousel-btn { width: 34px; height: 34px; font-size: 22px; } }
 
   .pi-card {
     display: grid; grid-template-columns: 200px 1fr;
@@ -1360,10 +1397,22 @@
   <h1 class="title">The people <em>behind the work</em>.</h1>
 
   <!-- Replaced with a real <img> tag using placeholder URL -->
-  <figure class="group-photo-card">
-    <img src="images/Group_photo_2026.jpg" style="width:100%; aspect-ratio:16/7; object-fit:cover; display:block;" alt="Group Photo">
-    <figcaption>Nanoparticle Metrology Lab — March 2026; Left to right: Anna D. Kashkanova, Daan Linders, Hannarae Lee</figcaption>
-  </figure>
+<figure class="group-photo-card">
+  <div class="carousel" id="group-carousel">
+    <div class="carousel-frame">
+      <div class="carousel-track">
+        <img src="images/Group_photo_2026.jpg" alt="Group photo, March 2026"
+             data-caption="Nanoparticle Metrology Lab, March 2026. Left to right: Anna D. Kashkanova, Daan Linders, Hannarae Lee">
+        <img src="images/Group_photo_2025.jpg" alt="Group photo, November 2025"
+             data-caption="Nanoparticle Metrology Lab, November 2025. Left to right: Anna D. Kashkanova">
+      </div>
+      <button class="carousel-btn prev" aria-label="Previous photo">&lsaquo;</button>
+      <button class="carousel-btn next" aria-label="Next photo">&rsaquo;</button>
+    </div>
+    <div class="carousel-dots"></div>
+  </div>
+  <figcaption class="carousel-caption"></figcaption>
+</figure>
 
   <div class="pi-card">
     <!-- Replaced portrait stub with a real image of a person (placeholder) -->
@@ -1773,6 +1822,42 @@ function renderPublications(currentFilter = 'all') {
   });
 }
 syncLatelyWithNews();
+
+(function () {
+  const carousel = document.getElementById('group-carousel');
+  if (!carousel) return;
+
+  const track = carousel.querySelector('.carousel-track');
+  const slides = Array.from(track.children);
+  const caption = document.querySelector('.carousel-caption');
+  const dotsWrap = carousel.querySelector('.carousel-dots');
+  let index = 0;
+
+  if (slides.length < 2) {
+    carousel.querySelectorAll('.carousel-btn').forEach(b => b.style.display = 'none');
+  }
+
+  slides.forEach((slide, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'carousel-dot';
+    dot.setAttribute('aria-label', 'Photo ' + (i + 1));
+    dot.addEventListener('click', () => go(i));
+    dotsWrap.appendChild(dot);
+  });
+  const dots = Array.from(dotsWrap.children);
+  if (slides.length < 2) dotsWrap.style.display = 'none';
+
+  function go(i) {
+    index = (i + slides.length) % slides.length;
+    track.style.transform = 'translateX(-' + index * 100 + '%)';
+    caption.textContent = slides[index].dataset.caption || '';
+    dots.forEach((d, j) => d.classList.toggle('active', j === index));
+  }
+
+  carousel.querySelector('.prev').addEventListener('click', () => go(index - 1));
+  carousel.querySelector('.next').addEventListener('click', () => go(index + 1));
+  go(0);
+})();
 
 // ============ LIGHTBOX FOR PHOTOS ============
 (function () {
