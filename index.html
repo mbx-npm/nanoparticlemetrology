@@ -620,8 +620,8 @@
     .pi-card { grid-template-columns: 1fr; gap: 24px; }
   }
   .portrait-stub {
-    position: relative; /* Add this */
-    z-index: 10;        /* Add this */
+    position: relative;
+    z-index: 10;
     aspect-ratio: 1;
     width: 100%;
     object-fit: cover;
@@ -631,12 +631,6 @@
     color: var(--rose-deep); font-family: 'Fraunces', serif;
     font-size: 13px; font-style: italic;
     text-align: center; padding: 12px;
-    image-rendering: -webkit-optimize-contrast; /* Best for Chrome/Safari */
-    image-rendering: high-quality;
-  
-    /* This prevents the "ghosting" artifacts during the shrink */
-    backface-visibility: hidden;
-    transform: translateZ(0);
   }
   .pi-card h3 {
     font-family: 'Fraunces', serif;
@@ -1373,7 +1367,7 @@
 
   <div class="pi-card">
     <!-- Replaced portrait stub with a real image of a person (placeholder) -->
-    <img src="images/Anna_Kashkanova.jpeg" alt="Anna Kashkanova" class="portrait-stub" style="padding: 0;">
+    <img src="images/Anna_Kashkanova_thumb.jpg" data-full="images/Anna_Kashkanova.jpeg" alt="Anna Kashkanova" class="portrait-stub" style="padding: 0;">
     <div>
       <h3>Anna D. Kashkanova</h3>
       <div class="role">Assistant Professor, Applied Physics &amp; Science Education, TU/e</div>
@@ -1393,7 +1387,7 @@
     
     <div class="members-list">
       <div class="member-card">
-        <img src="images/Hannarae_Lee.jpg" alt="Hannarae Lee" class="portrait-stub">
+        <img src="images/Hannarae_Lee_thumb.jpg" data-full="images/Hannarae_Lee.jpg" alt="Hannarae Lee" class="portrait-stub">
         <div>
           <div class="member-header">
             <h4>Hannarae Lee</h4>
@@ -1406,10 +1400,11 @@
 
 
       <div class="member-card">
-        <img src="images/Daan_Linders.jpg" alt="Daan Linders" class="portrait-stub">
+        <img src="images/Daan_Linders_thumb.jpg" data-full="images/Daan_Linders.jpg" alt="Daan Linders" class="portrait-stub">
         <div>
           <div class="member-header">
-            <span class="role-inline">MSc student (joint with Peter Zijlstra)</span>
+            <h4>Daan Linders</h4>
+            <span class="role-inline">MSc student</span>
           </div>
           <p>Hi! I am Daan, a Master’s student in Applied Physics at TU/e. After completing my Bachelor’s at TU/e, I continued with the Nano, Quantum, and Photonics track, where I developed a strong interest in nanoscale physics and photonic measurement techniques.
 During my graduation project within the Nanoparticle Metrology Lab, I focus on Mass Photometry (MP). My work explores how this technique can be applied and potentially combined with plasmonics to improve the detection and analysis of individual nanoparticles.</p>
@@ -1801,7 +1796,7 @@ syncLatelyWithNews();
     '.pi-card img.portrait-stub, .member-card img.portrait-stub, .group-photo-card img'
   ).forEach(img => {
     img.style.cursor = 'zoom-in';
-    img.addEventListener('click', () => openLightbox(img.src, img.alt));
+    img.addEventListener('click', () => openLightbox(img.dataset.full || img.src, img.alt));
   });
 
   overlay.addEventListener('click', e => {
